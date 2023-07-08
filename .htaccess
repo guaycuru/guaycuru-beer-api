@@ -1,0 +1,55 @@
+Options -MultiViews
+Options -Indexes
+RewriteEngine On
+
+# Enable Authorization header to be passed to all requests
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# Enable CORS
+Header always add Access-Control-Allow-Origin: "*"
+Header always add Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+Header always add Access-Control-Allow-Headers: "Content-Type, Authorization"
+
+# Disable caching
+FileETag None
+Header unset ETag
+Header unset Pragma
+Header unset Cache-Control
+Header unset Last-Modified
+Header set Pragma "no-cache"
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+Header set Expires "Mon, 1 Jan 1900 00:00:00 GMT"
+
+# Force 200 OK response for OPTIONS request
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule .* / [R=204,L]
+
+# Rewrite endpoints
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^([^/.]+)/?$ resources/$1.php [L,QSA]
+
+# Rewrite endpoints with UUID
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^([^/.]+)/([^/]+)/?$ resources/$1.php?uuid=$2 [L,QSA]
+
+# Rewrite users endpoint
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^users/([^/.]+)/?$ resources/users.php?uuid=$1 [L,QSA]
+
+# Rewrite endpoints with user UUID
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^users/([^/.]+)/([^/.]+)/?$ resources/$2.php?userUuid=$1 [L,QSA]
+
+# Rewrite endpoints with user UUID and UUID
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-d
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^users/([^/.]+)/([^/.]+)/([^/]+)/?$ resources/$2.php?userUuid=$1&uuid=$3 [L,QSA]
+
+# Prevent direct access to files not under endpoints/
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule !^(endpoints/|favicon\.ico|robots\.txt) - [F,L,NC]

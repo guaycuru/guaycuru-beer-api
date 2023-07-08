@@ -1,0 +1,25 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Guaybeer\\": "models/Guaybeer/",
+      "Util\\": "models/Util/"
+    }
+  },
+  "require": {
+    "php": "^8.1",
+    "doctrine/cache": "^1.13.0",
+    "doctrine/orm": "^2.13.3",
+    "doctrine/dbal": "^2.13.9",
+    "doctrine/common": "^3.4.3",
+    "ext-bcmath": "*",
+    "ext-curl": "*",
+    "ext-fileinfo": "*",
+    "ext-intl": "*",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "symfony/cache": "^6.1"
+  },
+  "require-dev": {
+    "rector/rector": "^0.14.8"
+  }
+}
