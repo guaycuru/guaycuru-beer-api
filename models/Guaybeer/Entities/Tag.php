@@ -35,6 +35,20 @@ class Tag {
 	}
 
 	/**
+	 * @return TagType
+	 */
+	public function getType(): TagType {
+		return $this->type;
+	}
+
+	/**
+	 * @param TagType $type
+	 */
+	public function setType(TagType $type): void {
+		$this->type = $type;
+	}
+
+	/**
 	 * toDTO
 	 *
 	 * Returns a DTO representation of this
