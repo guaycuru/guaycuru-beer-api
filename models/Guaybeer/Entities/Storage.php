@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Guaybeer\Traits\FindAndList;
 use Guaybeer\Traits\IdAndUuid;
 
-#[ORM\Table(name: 'stocks')]
+#[ORM\Table(name: 'storages')]
 #[ORM\Entity]
 class Storage {
 	use IdAndUuid, FindAndList;
