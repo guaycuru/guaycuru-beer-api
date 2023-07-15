@@ -38,12 +38,17 @@ function listUsers(): never {
 function getRequestedUserReturningIfForbidden(): User {
 	global $_user;
 
+	$uuid = $_GET['uuid'] ?? null;
+	if ($uuid === 'me') {
+		return $_user;
+	}
+
 	if ($_user->isAdmin() === false) {
-		if (!empty($_GET['uuid']) && $_user->getUuid() !== $_GET['uuid']) {
+		if (!empty($uuid) && $_user->getUuid() !== $uuid) {
 			Shared::JSON_Forbidden();
 		}
-	} elseif (!empty($_GET['uuid'])) {
-		return User::findByUuid($_GET['uuid']);
+	} elseif (!empty($uuid)) {
+		return User::findByUuid($uuid);
 	}
 
 	return $_user;
