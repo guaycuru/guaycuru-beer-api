@@ -29,8 +29,6 @@ class Brand {
 	}
 
 	/**
-	 * toDTO
-	 *
 	 * Returns a DTO representation of this
 	 *
 	 * @return array

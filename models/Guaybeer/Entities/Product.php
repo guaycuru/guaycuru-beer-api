@@ -32,8 +32,6 @@ class Product {
 	private array|Collection|Selectable $tags;
 
 	/**
-	 * toDTO
-	 *
 	 * Returns a DTO representation of this
 	 *
 	 * @param bool $includeItems

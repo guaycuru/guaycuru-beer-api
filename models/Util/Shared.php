@@ -3,6 +3,7 @@
 namespace Util;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
 use Guaybeer\Entities\User;
 
 abstract class Shared {
@@ -31,6 +32,17 @@ abstract class Shared {
 			self::_EM()->persist($entity);
 		} catch(\Exception $e) {
 			self::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function Flush_Or_Json_Unavailable(): void {
+		try {
+			Shared::_EM()->flush();
+		} catch(\Exception $e) {
+			Shared::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
 		}
 	}
 
@@ -128,6 +140,7 @@ abstract class Shared {
 	 *
 	 * @param bool $defaultToNull
 	 * @return User|null
+	 * @throws NotSupported
 	 */
 	public static function getUserReturningIfForbidden(bool $defaultToNull = false): ?User {
 		global $_user;
@@ -143,6 +156,21 @@ abstract class Shared {
 		}
 
 		return ($defaultToNull) ? null : $_user;
+	}
+
+	/**
+	 * Checks if all required fields are set, returning 400 Bad Request if not
+	 *
+	 * @param array $dto
+	 * @param array $requiredFields
+	 * @return void
+	 */
+	public static function checkRequiredFieldsReturning(array $dto, array $requiredFields): void {
+		foreach($requiredFields as $field) {
+			if (empty($dto[$field])) {
+				self::JSON_Bad_Request('Missing required field: ' . $field, $dto);
+			}
+		}
 	}
 
 }

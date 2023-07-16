@@ -71,8 +71,6 @@ class User {
 	}
 
 	/**
-	 * findByUuid
-	 *
 	 * Finds a single user by uuid
 	 *
 	 * @param $uuid
@@ -94,8 +92,6 @@ class User {
 	}
 
 	/**
-	 * Ping
-	 *
 	 * Checks if there's a logged in user
 	 *
 	 * @return self|false The user found via the token, if any
@@ -118,8 +114,6 @@ class User {
 	}
 
 	/**
-	 * getToken
-	 *
 	 * Gets the token from HTTP headers, if present
 	 *
 	 * @return string|null The token or null if not found
@@ -137,8 +131,6 @@ class User {
 	}
 
 	/**
-	 * toDTO
-	 *
 	 * Returns a DTO representation of this
 	 *
 	 * @return array

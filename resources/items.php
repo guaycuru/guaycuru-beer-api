@@ -186,24 +186,9 @@ function checkAdminReturningForbidden(): void {
 function updateFromDTOReturningIfInvalid(Item $item, array $dto): void {
 	$dto['name'] = trim($dto['name']);
 
-	checkRequiredFieldsReturning($dto, ['name']);
+	Shared::checkRequiredFieldsReturning($dto, ['name']);
 
 	$item->setName($dto['name']);
-}
-
-/**
- * Checks if all required fields are set, returning 400 Bad Request if not
- *
- * @param array $dto
- * @param array $requiredFields
- * @return void
- */
-function checkRequiredFieldsReturning(array $dto, array $requiredFields): void {
-	foreach($requiredFields as $field) {
-		if (empty($dto[$field])) {
-			Shared::JSON_Bad_Request('Missing required field: ' . $field, $dto);
-		}
-	}
 }
 
 // Load the user given in in the URI
@@ -220,7 +205,7 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		} else {
 			listItems();
 		}
-	/*case 'POST':
+	/*case 'PUT':
 		if (!empty($_GET['uuid'])) {
 			$item = getOrReturnNotFound($_GET['uuid']);
 		}
@@ -230,7 +215,7 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		}
 
 		updateItem($user, file_get_contents($_FILES['file']['tmp_name']), $_FILES['file']['name']);
-	case 'PUT':
+	case 'POST':
 		addItem($user, file_get_contents('php://input'), $_GET['uuid'] ?? '');*/
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {

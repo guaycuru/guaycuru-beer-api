@@ -18,8 +18,34 @@ class Storage {
 	private User $owner;
 
 	/**
-	 * toDTO
-	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName(string $name): void {
+		$this->name = $name;
+	}
+
+	/**
+	 * @return User
+	 */
+	public function getOwner(): User {
+		return $this->owner;
+	}
+
+	/**
+	 * @param User $owner
+	 */
+	public function setOwner(User $owner): void {
+		$this->owner = $owner;
+	}
+
+	/**
 	 * Returns a DTO representation of this
 	 *
 	 * @return array

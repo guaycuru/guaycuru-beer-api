@@ -25,8 +25,6 @@ class Item {
 	private Storage $storage;
 
 	/**
-	 * findByLabel
-	 *
 	 * Finds all items that have a given brand or storage
 	 *
 	 * @param Brand|null $brand
@@ -51,8 +49,6 @@ class Item {
 	}
 
 	/**
-	 * toDTO
-	 *
 	 * Returns a DTO representation of this
 	 *
 	 * @return array

@@ -2,6 +2,7 @@
 
 namespace Guaybeer\Entities;
 
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Mapping as ORM;
 use Util\Shared;
 
@@ -57,6 +58,7 @@ class UserToken {
 	/**
 	 * @param $token
 	 * @return self|null
+	 * @throws NotSupported
 	 */
 	public static function findOneByToken($token): ?self {
 		return Shared::_EM()->getRepository(get_called_class())->findOneBy(array('token' => $token));
