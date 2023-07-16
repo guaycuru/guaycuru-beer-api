@@ -58,9 +58,25 @@ class UserToken {
 	/**
 	 * @param $token
 	 * @return self|null
-	 * @throws NotSupported
 	 */
 	public static function findOneByToken($token): ?self {
 		return Shared::_EM()->getRepository(get_called_class())->findOneBy(array('token' => $token));
+	}
+
+	/**
+	 * Gets the token from HTTP headers, if present
+	 *
+	 * @return string|null The token or null if not found
+	 */
+	public static function getTokenFromHeader(): ?string {
+		$headers = getallheaders();
+		$authorization = $headers['Authorization'] ?? $_SERVER['Authorization'] ?? '';
+		if (!empty($authorization)) {
+			$headers = trim($authorization);
+			if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+				return $matches[1];
+			}
+		}
+		return null;
 	}
 }

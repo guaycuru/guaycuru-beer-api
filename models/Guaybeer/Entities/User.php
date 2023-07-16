@@ -96,11 +96,11 @@ class User {
 	 *
 	 * @return self|false The user found via the token, if any
 	 */
-	public static function ping(): self|false {
+	public static function isLoggedIn(): self|false {
 		$user = new self();
 
 		// Check token in header
-		$token = self::getToken();
+		$token = UserToken::getTokenFromHeader();
 		if (empty($token)) {
 			return false;
 		} else {
@@ -111,23 +111,6 @@ class User {
 		}
 
 		return $user;
-	}
-
-	/**
-	 * Gets the token from HTTP headers, if present
-	 *
-	 * @return string|null The token or null if not found
-	 */
-	private static function getToken(): ?string {
-		$headers = getallheaders();
-		$authorization = $headers['Authorization'] ?? $_SERVER['Authorization'] ?? '';
-		if (!empty($authorization)) {
-			$headers = trim($authorization);
-			if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-				return $matches[1];
-			}
-		}
-		return null;
 	}
 
 	/**
