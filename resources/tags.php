@@ -15,7 +15,7 @@ require_once(__DIR__.'/../common/common.inc.php');
  * @return never
  */
 function getTag(Tag $tag): never {
-	Shared::JSON_OK($tag->toDTO(), 200);
+	Shared::jsonOk($tag->toDTO(), 200);
 }
 
 /**
@@ -28,7 +28,7 @@ function listTags(): never {
 
 	// Convert to DTOs
 	$dtos = array_map(fn($tag) => $tag->toDTO(false), $tags);
-	Shared::JSON_OK($dtos, 200);
+	Shared::jsonOk($dtos, 200);
 }
 
 /**
@@ -41,10 +41,10 @@ function addTag(array $dto): never {
 	$tag = new Tag();
 	updateFromDTOReturningIfInvalid($tag, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($tag);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($tag);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($tag->toDTO(), 201);
+	Shared::jsonOk($tag->toDTO(), 201);
 }
 
 /**
@@ -57,10 +57,10 @@ function addTag(array $dto): never {
 function updateTag(Tag $tag, array $dto): never {
 	updateFromDTOReturningIfInvalid($tag, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($tag);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($tag);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($tag->toDTO(), 200);
+	Shared::jsonOk($tag->toDTO(), 200);
 }
 
 /**
@@ -77,10 +77,10 @@ function deleteTag(Tag $tag): never {
 		Shared::_EM()->remove($tag);
 		Shared::_EM()->flush();
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage());
+		Shared::jsonServiceUnavailable($e->getMessage());
 	}
 
-	Shared::JSON_OK(null, 204);
+	Shared::jsonOk(null, 204);
 }
 
 /**
@@ -96,7 +96,7 @@ function deleteTag(Tag $tag): never {
 function getOrReturnNotFound($uuid): Tag {
 	$tag = Tag::findByUuid($uuid);
 	if ($tag === null) {
-		Shared::JSON_Not_Found();
+		Shared::jsonNotFound();
 	}
 
 	return $tag;
@@ -134,18 +134,18 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		addTag($_GET);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$tag = getOrReturnNotFound($_GET['uuid']);
 		updateTag($tag, $_GET);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$tag = getOrReturnNotFound($_GET['uuid']);
 		deleteTag($tag);
 	default:
-		Shared::JSON_Method_Not_Allowed();
+		Shared::jsonMethodNotAllowed();
 }

@@ -27,22 +27,22 @@ abstract class Shared {
 	 * @param object $entity
 	 * @return void
 	 */
-	public static function Persist_Or_Json_Unavailable(object $entity): void {
+	public static function persistOrJsonUnavailable(object $entity): void {
 		try {
 			self::_EM()->persist($entity);
 		} catch(\Exception $e) {
-			self::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+			self::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
 		}
 	}
 
 	/**
 	 * @return void
 	 */
-	public static function Flush_Or_Json_Unavailable(): void {
+	public static function flushOrJsonUnavailable(): void {
 		try {
 			Shared::_EM()->flush();
 		} catch(\Exception $e) {
-			Shared::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+			Shared::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
 		}
 	}
 
@@ -54,7 +54,7 @@ abstract class Shared {
 	 * @param mixed $input The input oO
 	 * @return string The JSON encoded output
 	 */
-	public static function To_JSON(mixed $input): string {
+	public static function toJson(mixed $input): string {
 		return json_encode($input, JSON_FORCE_OBJECT & JSON_NUMERIC_CHECK);
 	}
 
@@ -67,9 +67,9 @@ abstract class Shared {
 	 * @param integer $code (Optional) HTTP response code
 	 * @return never
 	 */
-	public static function JSON_OK(mixed $entity = null, int $code = 200): never {
+	public static function jsonOk(mixed $entity = null, int $code = 200): never {
 		http_response_code($code);
-		die(self::To_JSON($entity));
+		die(self::toJson($entity));
 	}
 
 	/**
@@ -82,9 +82,9 @@ abstract class Shared {
 	 * @param array $extra (Optional) Extra info to be sent with the response JSON
 	 * @return never
 	 */
-	public static function JSON_Error(string $message, int $code = 500, array $extra = array()): never {
+	public static function jsonError(string $message, int $code = 500, array $extra = array()): never {
 		http_response_code($code);
-		die(self::To_JSON(array(
+		die(self::toJson(array(
 				'ok' => false,
 				'message' => $message
 			) + $extra));
@@ -95,8 +95,8 @@ abstract class Shared {
 	 * @param array $extra
 	 * @return never
 	 */
-	public static function JSON_Bad_Request(string $message = 'Bad Request', array $extra = array()): never {
-		self::JSON_Error($message, 400, $extra);
+	public static function jsonBadRequest(string $message = 'Bad Request', array $extra = array()): never {
+		self::jsonError($message, 400, $extra);
 	}
 
 	/**
@@ -104,8 +104,8 @@ abstract class Shared {
 	 * @param array $extra
 	 * @return never
 	 */
-	public static function JSON_Forbidden(string $message = 'Forbidden', array $extra = array()): never {
-		self::JSON_Error($message, 403, $extra);
+	public static function jsonForbidden(string $message = 'Forbidden', array $extra = array()): never {
+		self::jsonError($message, 403, $extra);
 	}
 
 	/**
@@ -113,8 +113,8 @@ abstract class Shared {
 	 * @param array $extra
 	 * @return never
 	 */
-	public static function JSON_Not_Found(string $message = 'Not Found', array $extra = array()): never {
-		self::JSON_Error($message, 404, $extra);
+	public static function jsonNotFound(string $message = 'Not Found', array $extra = array()): never {
+		self::jsonError($message, 404, $extra);
 	}
 
 	/**
@@ -122,8 +122,8 @@ abstract class Shared {
 	 * @param array $extra
 	 * @return never
 	 */
-	public static function JSON_Method_Not_Allowed(string $message = 'Method Not Allowed', array $extra = array()): never {
-		self::JSON_Error($message, 405, $extra);
+	public static function jsonMethodNotAllowed(string $message = 'Method Not Allowed', array $extra = array()): never {
+		self::jsonError($message, 405, $extra);
 	}
 
 	/**
@@ -131,8 +131,8 @@ abstract class Shared {
 	 * @param array $extra
 	 * @return never
 	 */
-	public static function JSON_Service_Unavailable(string $message = 'Service Unavailable', array $extra = array()): never {
-		self::JSON_Error($message, 503, $extra);
+	public static function jsonServiceUnavailable(string $message = 'Service Unavailable', array $extra = array()): never {
+		self::jsonError($message, 503, $extra);
 	}
 
 	/**
@@ -147,7 +147,7 @@ abstract class Shared {
 
 		if ($_user->isAdmin() === false) {
 			if (!empty($_GET['userUuid']) && $_user->getUuid() !== $_GET['userUuid']) {
-				self::JSON_Forbidden();
+				self::jsonForbidden();
 			} else {
 				return $_user;
 			}
@@ -168,7 +168,7 @@ abstract class Shared {
 	public static function checkRequiredFieldsReturning(array $dto, array $requiredFields): void {
 		foreach($requiredFields as $field) {
 			if (empty($dto[$field])) {
-				self::JSON_Bad_Request('Missing required field: ' . $field, $dto);
+				self::jsonBadRequest('Missing required field: ' . $field, $dto);
 			}
 		}
 	}

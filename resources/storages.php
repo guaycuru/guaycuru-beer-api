@@ -15,7 +15,7 @@ require_once(__DIR__.'/../common/common.inc.php');
  * @return never
  */
 function getStorage(Storage $storage): never {
-	Shared::JSON_OK($storage->toDTO(), 200);
+	Shared::jsonOk($storage->toDTO(), 200);
 }
 
 /**
@@ -28,7 +28,7 @@ function listStorages(): never {
 
 	// Convert to DTOs
 	$dtos = array_map(fn($storage) => $storage->toDTO(false), $storages);
-	Shared::JSON_OK($dtos, 200);
+	Shared::jsonOk($dtos, 200);
 }
 
 /**
@@ -43,10 +43,10 @@ function addStorage(User $user, array $dto): never {
 	$storage->setOwner($user);
 	updateFromDTOReturningIfInvalid($storage, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($storage);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($storage);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($storage->toDTO(), 201);
+	Shared::jsonOk($storage->toDTO(), 201);
 }
 
 /**
@@ -59,10 +59,10 @@ function addStorage(User $user, array $dto): never {
 function updateStorage(Storage $storage, array $dto): never {
 	updateFromDTOReturningIfInvalid($storage, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($storage);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($storage);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($storage->toDTO(), 200);
+	Shared::jsonOk($storage->toDTO(), 200);
 }
 
 /**
@@ -79,10 +79,10 @@ function deleteStorage(Storage $storage): never {
 		Shared::_EM()->remove($storage);
 		Shared::_EM()->flush();
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage());
+		Shared::jsonServiceUnavailable($e->getMessage());
 	}
 
-	Shared::JSON_OK(null, 204);
+	Shared::jsonOk(null, 204);
 }
 
 /*
@@ -98,7 +98,7 @@ function deleteStorage(Storage $storage): never {
 function getOrReturnNotFound($uuid): Storage {
 	$storage = Storage::findByUuid($uuid);
 	if ($storage === null) {
-		Shared::JSON_Not_Found();
+		Shared::jsonNotFound();
 	}
 
 	return $storage;
@@ -135,18 +135,18 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		addStorage($user, $_GET);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$storage = getOrReturnNotFound($_GET['uuid']);
 		updateStorage($storage, $_GET);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$storage = getOrReturnNotFound($_GET['uuid']);
 		deleteStorage($storage);
 	default:
-		Shared::JSON_Method_Not_Allowed();
+		Shared::jsonMethodNotAllowed();
 }

@@ -38,13 +38,13 @@ if ($method === 'POST' || $method === 'PUT') {
 unset($method, $raw);
 
 // Check if user is logged in
-$_user = User::ping();
+$_user = User::isLoggedIn();
 if ($_user === false) {
 	// Disallow anonymous access
-	Shared::JSON_Error('Unauthorized, missing token', 401);
+	Shared::jsonError('Unauthorized, missing token', 401);
 	exit;
 } elseif ($_user->getId() == null) {
 	// Disallow anonymous access
-	Shared::JSON_Error('Unauthorized, invalid token', 401);
+	Shared::jsonError('Unauthorized, invalid token', 401);
 	exit;
 }

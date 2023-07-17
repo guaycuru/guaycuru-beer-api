@@ -14,7 +14,7 @@ require_once(__DIR__.'/../common/common.inc.php');
  * @return never
  */
 function getUser(User $user): never {
-	Shared::JSON_OK($user->toDTO(), 200);
+	Shared::jsonOk($user->toDTO(), 200);
 }
 
 /**
@@ -27,7 +27,7 @@ function listUsers(): never {
 
 	// Convert to DTOs
 	$users = array_map(fn($user) => $user->toDTO(), User::list());
-	Shared::JSON_OK($users, 200);
+	Shared::jsonOk($users, 200);
 }
 
 /**
@@ -45,7 +45,7 @@ function getRequestedUserReturningIfForbidden(): User {
 
 	if ($_user->isAdmin() === false) {
 		if (!empty($uuid) && $_user->getUuid() !== $uuid) {
-			Shared::JSON_Forbidden();
+			Shared::jsonForbidden();
 		}
 	} elseif (!empty($uuid)) {
 		return User::findByUuid($uuid);
@@ -63,7 +63,7 @@ function checkAdminReturningForbidden(): void {
 	global $_user;
 
 	if ($_user->isAdmin() === false) {
-		Shared::JSON_Forbidden();
+		Shared::jsonForbidden();
 	}
 }
 
@@ -77,5 +77,5 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 			listUsers();
 		}
 	default:
-		Shared::JSON_Method_Not_Allowed();
+		Shared::jsonMethodNotAllowed();
 }

@@ -18,7 +18,7 @@ require_once(__DIR__.'/../common/common.inc.php');
  * @return never
  */
 function getItem(Item $item): never {
-	Shared::JSON_OK($item->toDTO(), 200);
+	Shared::jsonOk($item->toDTO(), 200);
 }
 
 /**
@@ -31,7 +31,7 @@ function listItems(): never {
 
 	// Convert to DTOs
 	$dtos = array_map(fn($item) => $item->toDTO(false, false), $items);
-	Shared::JSON_OK($dtos, 200);
+	Shared::jsonOk($dtos, 200);
 }
 
 /**
@@ -46,14 +46,14 @@ function findItems(?string $brandUuid, ?string $storageUuid): never {
 	if (!empty($labelUuid)) {
 		$brand = Brand::findByUuid($brandUuid);
 		if ($brand === null) {
-			Shared::JSON_Error('Brand not found', 404);
+			Shared::jsonError('Brand not found', 404);
 		}
 	}
 	$storage = null;
 	if (!empty($ipAddress)) {
 		$storage = Storage::findByUuid($storageUuid);
 		if ($storage === null) {
-			Shared::JSON_Error('Storage not found', 404);
+			Shared::jsonError('Storage not found', 404);
 		}
 	}
 
@@ -61,7 +61,7 @@ function findItems(?string $brandUuid, ?string $storageUuid): never {
 
 	// Convert to DTOs
 	$dtos = array_map(fn($item) => $item->toDTO(), $items);
-	Shared::JSON_OK($dtos, 200);
+	Shared::jsonOk($dtos, 200);
 }
 
 /**
@@ -90,7 +90,7 @@ function addItem(User $user, $contents, $filename): never {
 		$item->setMd5(md5($contents));
 		$item->setSize(strlen($contents));
 
-		Shared::Persist_Or_Json_Unavailable($item);
+		Shared::persistOrJsonUnavailable($item);
 	}
 
 	try {
@@ -111,17 +111,17 @@ function addItem(User $user, $contents, $filename): never {
 			}
 		}
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+		Shared::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
 	}
 
 	try {
 		Shared::_EM()->flush();
 		$status = 201;
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+		Shared::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
 	}
 
-	Shared::JSON_OK($item->toDTO(true, true), $status);
+	Shared::jsonOk($item->toDTO(true, true), $status);
 }
 
 /**
@@ -138,10 +138,10 @@ function deleteItem(Item $item): never {
 		Shared::_EM()->remove($item);
 		Shared::_EM()->flush();
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage());
+		Shared::jsonServiceUnavailable($e->getMessage());
 	}
 
-	Shared::JSON_OK(null, 204);
+	Shared::jsonOk(null, 204);
 }
 
 /*
@@ -157,7 +157,7 @@ function deleteItem(Item $item): never {
 function getOrReturnNotFound($uuid): Item {
 	$item = Item::findByUuid($uuid);
 	if ($item === null) {
-		Shared::JSON_Not_Found();
+		Shared::jsonNotFound();
 	}
 
 	return $item;
@@ -172,7 +172,7 @@ function checkAdminReturningForbidden(): void {
 	global $_user;
 
 	if ($_user->isAdmin() === false) {
-		Shared::JSON_Forbidden();
+		Shared::jsonForbidden();
 	}
 }
 
@@ -219,11 +219,11 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		addItem($user, file_get_contents('php://input'), $_GET['uuid'] ?? '');*/
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$item = getOrReturnNotFound($_GET['uuid']);
 		deleteItem($item);
 	default:
-		Shared::JSON_Method_Not_Allowed();
+		Shared::jsonMethodNotAllowed();
 }

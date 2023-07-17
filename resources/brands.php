@@ -15,7 +15,7 @@ require_once(__DIR__.'/../common/common.inc.php');
  * @return never
  */
 function getBrand(Brand $brand): never {
-	Shared::JSON_OK($brand->toDTO(), 200);
+	Shared::jsonOk($brand->toDTO(), 200);
 }
 
 /**
@@ -28,7 +28,7 @@ function listBrands(): never {
 
 	// Convert to DTOs
 	$dtos = array_map(fn($brand) => $brand->toDTO(false), $brands);
-	Shared::JSON_OK($dtos, 200);
+	Shared::jsonOk($dtos, 200);
 }
 
 /**
@@ -41,10 +41,10 @@ function addBrand(array $dto): never {
 	$brand = new Brand();
 	updateFromDTOReturningIfInvalid($brand, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($brand);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($brand);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($brand->toDTO(), 201);
+	Shared::jsonOk($brand->toDTO(), 201);
 }
 
 /**
@@ -57,10 +57,10 @@ function addBrand(array $dto): never {
 function updateBrand(Brand $brand, array $dto): never {
 	updateFromDTOReturningIfInvalid($brand, $dto);
 
-	Shared::Persist_Or_Json_Unavailable($brand);
-	Shared::Flush_Or_Json_Unavailable();
+	Shared::persistOrJsonUnavailable($brand);
+	Shared::flushOrJsonUnavailable();
 
-	Shared::JSON_OK($brand->toDTO(), 200);
+	Shared::jsonOk($brand->toDTO(), 200);
 }
 
 /**
@@ -77,10 +77,10 @@ function deleteBrand(Brand $brand): never {
 		Shared::_EM()->remove($brand);
 		Shared::_EM()->flush();
 	} catch(\Exception $e) {
-		Shared::JSON_Service_Unavailable($e->getMessage());
+		Shared::jsonServiceUnavailable($e->getMessage());
 	}
 
-	Shared::JSON_OK(null, 204);
+	Shared::jsonOk(null, 204);
 }
 
 /*
@@ -96,7 +96,7 @@ function deleteBrand(Brand $brand): never {
 function getOrReturnNotFound($uuid): Brand {
 	$item = Brand::findByUuid($uuid);
 	if ($item === null) {
-		Shared::JSON_Not_Found();
+		Shared::jsonNotFound();
 	}
 
 	return $item;
@@ -129,18 +129,18 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		addBrand($_GET);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$brand = getOrReturnNotFound($_GET['uuid']);
 		updateBrand($brand, $_GET);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
-			Shared::JSON_Bad_Request('Missing uuid');
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$brand = getOrReturnNotFound($_GET['uuid']);
 		deleteBrand($brand);
 	default:
-		Shared::JSON_Method_Not_Allowed();
+		Shared::jsonMethodNotAllowed();
 }
