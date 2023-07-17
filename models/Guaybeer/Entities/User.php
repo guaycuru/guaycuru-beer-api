@@ -19,13 +19,13 @@ class User {
 	#[ORM\OneToMany(mappedBy: 'user', targetEntity: 'UserToken', cascade: ['remove'], orphanRemoval: true)]
 	private array|Collection|Selectable $tokens;
 
-	#[ORM\Column]
+	#[ORM\Column(nullable: false)]
 	private string $name;
 
-	#[ORM\Column(unique: true)]
+	#[ORM\Column(unique: true, nullable: false)]
 	private string $email;
 
-	#[ORM\Column]
+	#[ORM\Column(nullable: false)]
 	private bool $admin = false;
 
 	/**

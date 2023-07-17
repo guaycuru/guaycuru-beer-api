@@ -13,9 +13,10 @@ use Guaybeer\Traits\IdAndUuid;
 class Product {
 	use IdAndUuid, FindAndList;
 
-	#[ORM\Column]
+	#[ORM\Column(nullable: false)]
 	private string $name;
 
+	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'Brand')]
 	private Brand $brand;
 

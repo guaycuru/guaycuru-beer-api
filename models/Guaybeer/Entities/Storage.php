@@ -11,9 +11,10 @@ use Guaybeer\Traits\IdAndUuid;
 class Storage {
 	use IdAndUuid, FindAndList;
 
-	#[ORM\Column]
+	#[ORM\Column(nullable: false)]
 	private string $name;
 
+	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'User')]
 	private User $owner;
 

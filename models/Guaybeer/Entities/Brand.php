@@ -11,7 +11,7 @@ use Guaybeer\Traits\IdAndUuid;
 class Brand {
 	use IdAndUuid, FindAndList;
 
-	#[ORM\Column]
+	#[ORM\Column(nullable: false)]
 	private string $name;
 
 	/**

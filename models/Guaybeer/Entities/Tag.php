@@ -14,10 +14,10 @@ use Guaybeer\Traits\IdAndUuid;
 class Tag {
 	use IdAndUuid, FindAndList, GetOrNew;
 
-	#[ORM\Column(unique: true)]
+	#[ORM\Column(unique: true, nullable: false)]
 	private string $name;
 
-	#[ORM\Column(unique: true)]
+	#[ORM\Column(unique: true, nullable: false)]
 	private TagType $type;
 
 	/**
