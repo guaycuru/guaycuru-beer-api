@@ -14,8 +14,8 @@ class Storage {
 	#[ORM\Column(nullable: false)]
 	private string $name;
 
-	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'User')]
+	#[ORM\JoinColumn(nullable: false)]
 	private User $owner;
 
 	/**

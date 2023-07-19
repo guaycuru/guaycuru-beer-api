@@ -18,12 +18,12 @@ class Item {
 	#[ORM\Column(nullable: true)]
 	private \DateTimeImmutable $expiry;
 
-	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'Product')]
+	#[ORM\JoinColumn(nullable: false)]
 	private Product $product;
 
-	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'Storage')]
+	#[ORM\JoinColumn(nullable: false)]
 	private Storage $storage;
 
 	/**

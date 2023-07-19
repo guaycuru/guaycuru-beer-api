@@ -18,6 +18,7 @@ class UserToken {
 	private string $token;
 
 	#[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'tokens')]
+	#[ORM\JoinColumn(nullable: false)]
 	private User $user;
 
 	/**
