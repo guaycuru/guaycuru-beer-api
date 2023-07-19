@@ -15,9 +15,6 @@ class Item {
 	#[ORM\Column(nullable: false)]
 	private string $name;
 
-	#[ORM\Column(nullable: true)]
-	private \DateTimeImmutable $expiry;
-
 	#[ORM\ManyToOne(targetEntity: 'Product')]
 	#[ORM\JoinColumn(nullable: false)]
 	private Product $product;
@@ -25,6 +22,12 @@ class Item {
 	#[ORM\ManyToOne(targetEntity: 'Storage')]
 	#[ORM\JoinColumn(nullable: false)]
 	private Storage $storage;
+
+	#[ORM\Column(nullable: false)]
+	private int $quantity;
+
+	#[ORM\Column(nullable: true)]
+	private \DateTimeImmutable $expiry;
 
 	/**
 	 * Finds all items that have a given brand or storage
@@ -65,20 +68,6 @@ class Item {
 	}
 
 	/**
-	 * @return \DateTimeImmutable
-	 */
-	public function getExpiry(): \DateTimeImmutable {
-		return $this->expiry;
-	}
-
-	/**
-	 * @param \DateTimeImmutable $expiry
-	 */
-	public function setExpiry(\DateTimeImmutable $expiry): void {
-		$this->expiry = $expiry;
-	}
-
-	/**
 	 * @return Product
 	 */
 	public function getProduct(): Product {
@@ -104,6 +93,34 @@ class Item {
 	 */
 	public function setStorage(Storage $storage): void {
 		$this->storage = $storage;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getQuantity(): int {
+		return $this->quantity;
+	}
+
+	/**
+	 * @param int $quantity
+	 */
+	public function setQuantity(int $quantity): void {
+		$this->quantity = $quantity;
+	}
+
+	/**
+	 * @return \DateTimeImmutable
+	 */
+	public function getExpiry(): \DateTimeImmutable {
+		return $this->expiry;
+	}
+
+	/**
+	 * @param \DateTimeImmutable $expiry
+	 */
+	public function setExpiry(\DateTimeImmutable $expiry): void {
+		$this->expiry = $expiry;
 	}
 
 	/**
