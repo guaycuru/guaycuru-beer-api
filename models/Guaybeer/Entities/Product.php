@@ -2,6 +2,7 @@
 
 namespace Guaybeer\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,6 +33,11 @@ class Product {
 	#[ORM\ManyToMany(targetEntity: 'Tag')]
 	private array|Collection|Selectable $tags;
 
+	public function __construct() {
+		$this->items = new ArrayCollection();
+		$this->tags = new ArrayCollection();
+	}
+
 	/**
 	 * Returns a DTO representation of this
 	 *
@@ -43,7 +49,7 @@ class Product {
 		$dto = [
 			'uuid' => $this->uuid,
 			'name' => $this->name,
-			'brand' => $this->brand->toDTO(),
+			'brand' => $this->brand->toDTO()
 		];
 
 		if ($includeItems) {
