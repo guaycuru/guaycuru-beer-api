@@ -20,7 +20,7 @@ class Item {
 	#[ORM\JoinColumn(nullable: false)]
 	private Storage $storage;
 
-	#[ORM\Column(nullable: false)]
+	#[ORM\Column(nullable: false, options: ['unsigned' => true])]
 	private int $quantity;
 
 	#[ORM\Column(nullable: true)]
