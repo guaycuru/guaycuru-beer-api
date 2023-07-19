@@ -12,9 +12,6 @@ use Util\Shared;
 class Item {
 	use IdAndUuid, FindAndList;
 
-	#[ORM\Column(nullable: false)]
-	private string $name;
-
 	#[ORM\ManyToOne(targetEntity: 'Product')]
 	#[ORM\JoinColumn(nullable: false)]
 	private Product $product;
@@ -51,20 +48,6 @@ class Item {
 		}
 
 		return $qb->getQuery()->getResult();
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name): void {
-		$this->name = $name;
 	}
 
 	/**
@@ -131,10 +114,10 @@ class Item {
 	public function toDTO(): array {
 		return [
 			'uuid' => $this->uuid,
-			'name' => $this->name,
-			'expiry' => $this->expiry->format('Y-m-d'),
+			'quantity' => $this->quantity,
 			'product' => $this->product->toDTO(),
-			'storage' => $this->storage->toDTO()
+			'storage' => $this->storage->toDTO(),
+			'expiry' => $this->expiry->format('Y-m-d')
 		];
 	}
 }
