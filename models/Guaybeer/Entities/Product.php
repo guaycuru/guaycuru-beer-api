@@ -53,11 +53,11 @@ class Product {
 		];
 
 		if ($includeItems) {
-			$dto['items'] = $this->items->map(fn($item) => $item->toDTO());
+			$dto['items'] = $this->items->map(fn($item) => $item->toDTO())->toArray();
 		}
 
 		if ($includeTags) {
-			$dto['tags'] = $this->tags->map(fn($tag) => $tag->toDTO());
+			$dto['tags'] = $this->tags->map(fn($tag) => $tag->toDTO())->toArray();
 		}
 
 		return $dto;
