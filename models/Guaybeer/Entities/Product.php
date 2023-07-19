@@ -16,8 +16,8 @@ class Product {
 	#[ORM\Column(nullable: false)]
 	private string $name;
 
-	#[ORM\Column(nullable: false)]
 	#[ORM\ManyToOne(targetEntity: 'Brand')]
+	#[ORM\JoinColumn(nullable: false)]
 	private Brand $brand;
 
 	/**
