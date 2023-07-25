@@ -154,10 +154,10 @@ function checkAdminReturningForbidden(): void {
  * @param array $dto
  * @return void
  */
-function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $allowProduct = false): void {
+function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $setProduct = false): void {
 	$dto['name'] = trim($dto['name']);
 
-	Shared::checkRequiredFieldsReturning($dto, ['quantity', 'expiry', 'storageUuid']);
+	Shared::checkRequiredFieldsReturning($dto, ['quantity', 'expiry', 'storage.uuid']);
 
 	$item->setQuantity($dto['quantity']);
 
@@ -169,14 +169,18 @@ function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $allowProd
 
 	$storage = Storage::findByUuid($dto['storageUuid']);
 	if ($storage === null) {
-		Shared::jsonBadRequest('Invalid storage');
+		Shared::jsonBadRequest('Storage not found');
 	}
 	$item->setStorage($storage);
 
-	if ($allowProduct) {
-		$product = Product::findByUuid($dto['productUuid']);
+	if ($setProduct) {
+		if (empty($dto['product']['uuid'])) {
+			Shared::jsonBadRequest('Missing product uuid');
+		}
+
+		$product = Product::findByUuid($dto['product']['uuid']);
 		if ($product === null) {
-			Shared::jsonBadRequest('Invalid product');
+			Shared::jsonBadRequest('Product not found');
 		}
 		$item->setProduct($product);
 	}

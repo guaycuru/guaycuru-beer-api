@@ -168,8 +168,18 @@ abstract class Shared {
 	 */
 	public static function checkRequiredFieldsReturning(array $dto, array $requiredFields): void {
 		foreach($requiredFields as $field) {
-			if (empty($dto[$field])) {
-				self::jsonBadRequest('Missing required field: ' . $field, $dto);
+			if (str_contains($field, '.')) {
+				$parts = explode('.', $field);
+				$entity = $parts[0];
+				$entityField = $parts[1];
+
+				if (empty($dto[$entity][$entityField])) {
+					self::jsonBadRequest('Missing required field: ' . $field, $dto);
+				}
+			} else {
+				if(empty($dto[$field])) {
+					self::jsonBadRequest('Missing required field: ' . $field, $dto);
+				}
 			}
 		}
 	}
