@@ -173,11 +173,11 @@ abstract class Shared {
 				$entity = $parts[0];
 				$entityField = $parts[1];
 
-				if (empty($dto[$entity][$entityField])) {
+				if (!isset($dto[$entity][$entityField])) {
 					self::jsonBadRequest('Missing required field: ' . $field, $dto);
 				}
 			} else {
-				if(empty($dto[$field])) {
+				if(!isset($dto[$field])) {
 					self::jsonBadRequest('Missing required field: ' . $field, $dto);
 				}
 			}
