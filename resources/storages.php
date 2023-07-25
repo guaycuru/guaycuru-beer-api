@@ -8,6 +8,8 @@ use Util\Shared;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
+global $_JSON;
+
 /**
  * Get storage by uuid and return it with a 200 http code
  *
@@ -132,14 +134,14 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 			listStorages();
 		}
 	case 'POST':
-		addStorage($user, $_GET);
+		addStorage($user, $_JSON);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$storage = getOrReturnNotFound($_GET['uuid']);
-		updateStorage($storage, $_GET);
+		updateStorage($storage, $_JSON);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');

@@ -8,6 +8,8 @@ use Util\Shared;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
+global $_JSON;
+
 /**
  * Get brand by uuid and return it with a 200 http code
  *
@@ -126,14 +128,14 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 			listBrands();
 		}
 	case 'POST':
-		addBrand($_GET);
+		addBrand($_JSON);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$brand = getOrReturnNotFound($_GET['uuid']);
-		updateBrand($brand, $_GET);
+		updateBrand($brand, $_JSON);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');

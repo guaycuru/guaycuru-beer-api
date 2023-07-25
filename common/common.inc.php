@@ -28,10 +28,7 @@ if ($method === 'POST' || $method === 'PUT') {
 	if (!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
 		$raw = file_get_contents('php://input');
 		if (!empty($raw)) {
-			if ($method === 'POST')
-				$_POST = json_decode($raw, true);
-			else // PUT
-				$_PUT = json_decode($raw, true);
+			$_JSON = json_decode($raw, true);
 		}
 	}
 }

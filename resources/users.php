@@ -7,6 +7,8 @@ use Util\Shared;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
+global $_JSON;
+
 /**
  * Get user by uuid and return it with a 200 http code
  *

@@ -10,6 +10,8 @@ use Util\Shared;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
+global $_JSON;
+
 /**
  * Get item by uuid and return it with a 200 http code
  *
@@ -152,11 +154,10 @@ function checkAdminReturningForbidden(): void {
  *
  * @param Item $item
  * @param array $dto
+ * @param bool $setProduct
  * @return void
  */
 function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $setProduct = false): void {
-	$dto['name'] = trim($dto['name']);
-
 	Shared::checkRequiredFieldsReturning($dto, ['quantity', 'expiry', 'storage.uuid']);
 
 	$item->setQuantity($dto['quantity']);
@@ -200,6 +201,8 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		} else {
 			listItems();
 		}
+	case 'POST':
+		addItem($_JSON);
 	case 'PUT':
 		if (!empty($_GET['uuid'])) {
 			$item = getOrReturnNotFound($_GET['uuid']);
@@ -207,9 +210,7 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 			Shared::jsonBadRequest('Missing uuid');
 		}
 
-		updateItem($item, $_GET);
-	case 'POST':
-		addItem($_GET);
+		updateItem($item, $_JSON);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');

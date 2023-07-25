@@ -8,6 +8,8 @@ use Util\Shared;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
+global $_JSON;
+
 /**
  * Get tag by uuid and return it with a 200 http code
  *
@@ -131,14 +133,14 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 			listTags();
 		}
 	case 'POST':
-		addTag($_GET);
+		addTag($_JSON);
 	case 'PUT':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');
 		}
 
 		$tag = getOrReturnNotFound($_GET['uuid']);
-		updateTag($tag, $_GET);
+		updateTag($tag, $_JSON);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');
