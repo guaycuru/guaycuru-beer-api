@@ -7,6 +7,8 @@ use Doctrine\ORM\Exception\NotSupported;
 use Guaybeer\Entities\User;
 
 abstract class Shared {
+	const JSON_DATE = 'Y-m-d';
+
 	private static $_EM;
 
 	/**
@@ -140,7 +142,6 @@ abstract class Shared {
 	 *
 	 * @param bool $defaultToNull
 	 * @return User|null
-	 * @throws NotSupported
 	 */
 	public static function getUserReturningIfForbidden(bool $defaultToNull = false): ?User {
 		global $_user;

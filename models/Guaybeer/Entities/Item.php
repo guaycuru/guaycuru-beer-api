@@ -117,7 +117,7 @@ class Item {
 			'quantity' => $this->quantity,
 			'product' => $this->product->toDTO(),
 			'storage' => $this->storage->toDTO(),
-			'expiry' => $this->expiry->format('Y-m-d')
+			'expiry' => $this->expiry->format(Shared::JSON_DATE)
 		];
 	}
 }

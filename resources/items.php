@@ -4,10 +4,9 @@ namespace Guaybeer;
 
 use Guaybeer\Entities\Brand;
 use Guaybeer\Entities\Item;
+use Guaybeer\Entities\Product;
 use Guaybeer\Entities\Storage;
-use Guaybeer\Entities\User;
 use Util\Shared;
-use Util\Uuid;
 
 require_once(__DIR__.'/../common/common.inc.php');
 
@@ -67,61 +66,33 @@ function findItems(?string $brandUuid, ?string $storageUuid): never {
 /**
  * Add new item and return the newly created entity with a 201 http code
  *
- * @param User $user
- * @param $contents
- * @param $filename
+ * @param array $dto
  * @return never
  */
-function addItem(User $user, $contents, $filename): never {
-	$sha1 = sha1($contents);
-	$item = Item::findBySha1($sha1);
-	$status = 200;
-	$now = new \DateTimeImmutable();
+function addItem(array $dto): never {
+	$item = new Item();
+	updateFromDTOReturningIfInvalid($item, $dto, true);
 
-	if ($item === null) {
-		$item = new Item();
-		$item->setUuid(Uuid::v4());
-		$item->setUser($user);
-		$item->setDatetime($now);
-		$item->setName($filename);
+	Shared::persistOrJsonUnavailable($item);
+	Shared::flushOrJsonUnavailable();
 
-		// Calculate sha1 and size
-		$item->setSha1($sha1);
-		$item->setMd5(md5($contents));
-		$item->setSize(strlen($contents));
+	Shared::jsonOk($item->toDTO(), 201);
+}
 
-		Shared::persistOrJsonUnavailable($item);
-	}
+/**
+ * Update existing item and return the updated entity with a 200 http code
+ *
+ * @param Item $item
+ * @param array $dto
+ * @return never
+ */
+function updateItem(Item $item, array $dto): never {
+	updateFromDTOReturningIfInvalid($item, $dto, false);
 
-	try {
-		foreach(Provider::cases() as $provider) {
-			$analysis = Analysis::getOrNew($item, $provider, $now);
-			$new = $analysis->getId() === null;
+	Shared::persistOrJsonUnavailable($item);
+	Shared::flushOrJsonUnavailable();
 
-			$refreshed = $analysis->refreshIfNeeded($now, $contents, $filename);
-
-			if ($new) {
-				if (!$refreshed) {
-					$item->getAnalyses()->removeElement($analysis);
-				} else {
-					Shared::_EM()->persist($analysis);
-				}
-			} elseif ($refreshed) {
-				Shared::_EM()->persist($analysis);
-			}
-		}
-	} catch(\Exception $e) {
-		Shared::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
-	}
-
-	try {
-		Shared::_EM()->flush();
-		$status = 201;
-	} catch(\Exception $e) {
-		Shared::jsonServiceUnavailable($e->getMessage(), ['trace' => $e->getTraceAsString()]);
-	}
-
-	Shared::jsonOk($item->toDTO(true, true), $status);
+	Shared::jsonOk($item->toDTO(), 200);
 }
 
 /**
@@ -183,12 +154,32 @@ function checkAdminReturningForbidden(): void {
  * @param array $dto
  * @return void
  */
-function updateFromDTOReturningIfInvalid(Item $item, array $dto): void {
+function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $allowProduct = false): void {
 	$dto['name'] = trim($dto['name']);
 
-	Shared::checkRequiredFieldsReturning($dto, ['name']);
+	Shared::checkRequiredFieldsReturning($dto, ['quantity', 'expiry', 'storageUuid']);
 
-	$item->setName($dto['name']);
+	$item->setQuantity($dto['quantity']);
+
+	$expiry = \DateTimeImmutable::createFromFormat(Shared::JSON_DATE, $dto['expiry']);
+	if ($expiry === false) {
+		Shared::jsonBadRequest('Invalid expiry date');
+	}
+	$item->setExpiry($expiry);
+
+	$storage = Storage::findByUuid($dto['storageUuid']);
+	if ($storage === null) {
+		Shared::jsonBadRequest('Invalid storage');
+	}
+	$item->setStorage($storage);
+
+	if ($allowProduct) {
+		$product = Product::findByUuid($dto['productUuid']);
+		if ($product === null) {
+			Shared::jsonBadRequest('Invalid product');
+		}
+		$item->setProduct($product);
+	}
 }
 
 // Load the user given in in the URI
@@ -205,18 +196,16 @@ switch(strtoupper($_SERVER['REQUEST_METHOD'])) {
 		} else {
 			listItems();
 		}
-	/*case 'PUT':
+	case 'PUT':
 		if (!empty($_GET['uuid'])) {
 			$item = getOrReturnNotFound($_GET['uuid']);
+		} else {
+			Shared::jsonBadRequest('Missing uuid');
 		}
 
-		if (empty($_FILES['file'])) {
-			Shared::JSON_Bad_Request('Missing file');
-		}
-
-		updateItem($user, file_get_contents($_FILES['file']['tmp_name']), $_FILES['file']['name']);
+		updateItem($item, $_GET);
 	case 'POST':
-		addItem($user, file_get_contents('php://input'), $_GET['uuid'] ?? '');*/
+		addItem($_GET);
 	case 'DELETE':
 		if (empty($_GET['uuid'])) {
 			Shared::jsonBadRequest('Missing uuid');
