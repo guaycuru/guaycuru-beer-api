@@ -7,8 +7,6 @@ use Doctrine\ORM\Exception\NotSupported;
 use Guaybeer\Entities\User;
 
 abstract class Shared {
-	const JSON_DATE = 'Y-m-d';
-
 	private static $_EM;
 
 	/**

@@ -162,13 +162,14 @@ function updateFromDTOReturningIfInvalid(Item $item, array $dto, bool $setProduc
 
 	$item->setQuantity($dto['quantity']);
 
-	$expiry = \DateTimeImmutable::createFromFormat(Shared::JSON_DATE, $dto['expiry']);
-	if ($expiry === false) {
-		Shared::jsonBadRequest('Invalid expiry date');
+	try {
+		$expiry = new \DateTimeImmutable($dto['expiry']);
+	} catch (\Exception $exception) {
+		Shared::jsonBadRequest('Invalid expiry date', ['exception' => $exception]);
 	}
 	$item->setExpiry($expiry);
 
-	$storage = Storage::findByUuid($dto['storageUuid']);
+	$storage = Storage::findByUuid($dto['storage']['uuid']);
 	if ($storage === null) {
 		Shared::jsonBadRequest('Storage not found');
 	}
