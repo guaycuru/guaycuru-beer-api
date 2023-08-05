@@ -28,7 +28,7 @@ if (CONFIG_DEV_MODE) {
 unset($cacheDir, $modelsDir, $proxyDir, $queryCache, $metadataCache);
 
 // DB connection options
-$connection = array(
+$connectionConfig = array(
 	'driver' => CONFIG_DB_TYPE,
 	'user' => CONFIG_DB_USER,
 	'password' => CONFIG_DB_PASS,
@@ -39,15 +39,18 @@ $connection = array(
 	)
 );
 if ((defined('CONFIG_DB_SOCKET')) && (!empty(CONFIG_DB_SOCKET)))
-	$connection['unix_socket'] = CONFIG_DB_SOCKET;
+	$connectionConfig['unix_socket'] = CONFIG_DB_SOCKET;
 elseif ((defined('CONFIG_DB_HOST')) && (!empty(CONFIG_DB_HOST))) {
-	$connection['host'] = CONFIG_DB_HOST;
+	$connectionConfig['host'] = CONFIG_DB_HOST;
 	if ((defined('CONFIG_DB_PORT')) && (!empty(CONFIG_DB_PORT)))
-		$connection['port'] = CONFIG_DB_PORT;
+		$connectionConfig['port'] = CONFIG_DB_PORT;
 }
 
+// Create the connection
+$connection = Doctrine\DBAL\DriverManager::getConnection($connectionConfig, $config);
+
 // Create the Entity Manager
-$_EM = EntityManager::create($connection, $config);
+$_EM = new EntityManager($connection, $config);
 
 // Set the Entity Manager in the Shared class
 Shared::_EM($_EM);
